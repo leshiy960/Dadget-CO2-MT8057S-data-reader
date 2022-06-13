@@ -7,7 +7,7 @@ Tested on Raspberry pi 3B+ (armv7l) and Manjaro Linux (x86) with MT8057S revisio
 
 ```bash
 sudo apt install libusb-1.0-0-dev libudev-dev
-sudo pip3 install hid
+sudo pip3 install hidapi
 ```
 
 ## Example:
@@ -27,7 +27,22 @@ def get_temp(device):
         if data[0] == 0x42:
             return ((data[1] << 8) + data[2]) * 0.0625 - 273.15
 
-h = hid.Device(0x04d9, 0xa052)
+
+devices = [(x['vendor_id'], x['product_id'], x['product_string']) for x in hid.enumerate() if x['product_string'] == 'USB-zyTemp']
+if devices:
+    device = devices[0]
+    try:
+        print(device)
+        h = hid.device()
+        h.open(vendor_id=device[0], product_id=device[1])
+        h.send_feature_report([0,0,0,0,0,0,0,0])
+        print('Device connected', device[0], device[1])
+    except Exception as e:
+        print('Error', e)
+else:
+    print('Device not found')
+    exit()
+
 print(get_co2(h), get_temp(h))
 h.close()
 ```
