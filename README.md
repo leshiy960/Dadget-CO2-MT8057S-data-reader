@@ -53,6 +53,5 @@ h.close()
 pi@malina3:~ $ sudo python3 main.py 
 835 22.037500000000023
 pi@malina3:~ $ 
-
 ```
 
